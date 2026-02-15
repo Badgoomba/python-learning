@@ -1,0 +1,16 @@
+[
+    {
+        "amount": 50.0,
+        "category": "other",
+        "type": "income",
+        "date": "2026-02-14",
+        "description": "test"
+    },
+    {
+        "amount": 2.0,
+        "category": "other",
+        "type": "expense",
+        "date": "2026-02-14",
+        "description": "test"
+    }
+]

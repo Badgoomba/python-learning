@@ -12,5 +12,19 @@
         "type": "expense",
         "date": "2026-02-14",
         "description": "test"
+    },
+    {
+        "amount": 50.0,
+        "category": "gift",
+        "type": "expense",
+        "date": "2026-02-17",
+        "description": "Testing new script"
+    },
+    {
+        "amount": 1000.0,
+        "category": "gift",
+        "type": "expense",
+        "date": "02/17/2026",
+        "description": "free money"
     }
 ]

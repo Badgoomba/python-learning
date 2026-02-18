@@ -2,7 +2,7 @@
 import json # Need for storing our data
 import datetime # Track when transactions happen
 import os # Checking if files exist, create directories
-from collections import defaultdict  #Greate for grouping data by catergory
+from collections import defaultdict  #Greate for grouping data by category
 
 # Helper/ utility functions
 def show_menu():
@@ -28,32 +28,11 @@ def save_trans(trans):
     with open("budget_trx.json", "w") as file:
         json.dump(trans, file, indent=4)
 
-# Feature functions 
-def add_income():
-    try: 
-        amount = float(input("Enter amount: "))
-        if amount <= 0:
-            print("Amount must be positive!")
-            return 
-    except ValueError:
-            print("Please enter a valid number!")
-            return
-    category = input("Enter category (salary/gift/sale/other): ")
-    description = input("Enter description: ")
-    today = str(datetime.date.today())
-    new_transaction = {
-                "amount": amount ,
-                "category": category,
-                "type": "income",
-                "date": today,
-                "description": description
-            }
-    trans = load_trans()
-    trans.append(new_transaction)
-    save_trans(trans)
-    print("Income added successfully!")
 
-def add_expense():
+### Feature functions ###
+
+# add_transaction
+def add_transaction(transaction_type):
      try: 
         amount = float(input("Enter amount: "))
         if amount <= 0:
@@ -62,9 +41,20 @@ def add_expense():
      except ValueError:
              print("Please enter a valid number!")
              return
-     category = input("Enter category (food/gas/housing/utility/other): ")
+     if transaction_type == "income":
+          valid_categories = ["salary", "gift","sale", "other" ]
+          catergory_prompt = "Enter category (salary/gift/sale/other): "
+     else: 
+          valid_categories = ["food","gas", "housing", "utility", "other"]
+          catergory_prompt = "Enter category (food/gas/housing/utility/other): "
+
+     category = input(catergory_prompt)
+     if category not in valid_categories:
+          print(f"Invalid category. Please choose from: {', '.join(valid_categories)}")
+          return
+     
      description = input("Enter description: ")
-     today = str(datetime.date.today())
+     today = str(datetime.date.today().strftime("%m/%d/%Y"))
      new_transaction = {
                 "amount": amount ,
                 "category": category,
@@ -75,8 +65,57 @@ def add_expense():
      trans = load_trans()
      trans.append(new_transaction)
      save_trans(trans)
-     print("Expense added successfully, sadly!")
 
+     transaction_type_display = "Income" if transaction_type == "income" else "Expense"
+     print(f"{transaction_type_display} added succesfully")
+
+# view all transactions
+
+def view_all_trans():
+    transactions = load_trans()
+
+    if not transactions:
+        print("No transactions found.")
+        return
+    
+    print("\n=== All Transactions ===")
+    print(f"{'Date':<12} {'Type':<10} {'Category':<15} {'Amount':<10} {'Description'}")
+    print("-" * 70)
+
+    # sort transaction by date asc
+    sorted_transactions = sorted(transactions, key=lambda x: x['date'], reverse=True)
+
+    for transaction in sorted_transactions:
+        amount = f"${transaction['amount']:.2f}"
+        transaction_type = transaction['type'].capitalize()
+        print(f"{transaction['date']:<12} {transaction_type:<10} {transaction['category']:<15} {amount:<10} {transaction['description']}")
+
+    print("-" * 70)
+    print(f"Total transactions: {len(transactions)}")
+
+# view_balance
+def view_balance():
+    transactions = load_trans()
+
+    if not transactions: 
+        print("No transactions found.")
+        return
+    total_income = sum(transaction['amount'] for transaction in transactions if transaction['type'] == 'income' )
+    total_expenses = sum(transaction['amount'] for transaction in transactions if transaction['type'] == 'expense' )
+
+    balance = total_income - total_expenses
+
+    print("\n=== Balance Summary ===")
+    print(f"Total Income: ${total_income:.2f}")
+    print(f"Total Expenses: ${total_expenses:.2f}")
+    print(f"Current Balance: ${balance:.2f}")
+
+# transaction_types
+def add_income():
+    add_transaction("income")
+
+def add_expense():
+     add_transaction("expense")
 
      
 
@@ -94,9 +133,9 @@ def main():
         elif choice == "2":
              add_expense()
         elif choice == "3":
-            print("Coming soon!")
+             view_all_trans()
         elif choice == "4":
-            print("Coming soon!")
+            view_balance()
         elif choice == "5":
             print("Coming soon!")
         elif choice == "6":
